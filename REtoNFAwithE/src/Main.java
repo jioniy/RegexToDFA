@@ -15,8 +15,8 @@ import java.util.Scanner;
  */
 enum Type{
 	SYMBOL(' ', -1),
-	CONCAT('.', 1),
-	UNION('+', 2),
+	UNION('+', 1),
+	CONCAT('.', 2),
 	KLEENE('*', 3); // priority 값이 높을 수록 우선임. 
 	
 	private final Character text;
@@ -309,6 +309,10 @@ public class Main {
 		
 		//RE TREE 구성
 		RegexTree rTree = constructTree(alphabetSet, pRegex);
+		
+		
+		System.out.println(rTree.getValue());
+		System.out.println(rTree.getType().getText());
 		
 		//CHECK RE TREE
 		inorder(rTree);
