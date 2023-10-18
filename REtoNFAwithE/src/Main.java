@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 /*
- * 문자 타입
+ * Expression 타입
  * SYMBOL - alphabet
  * CONCAT
  * UNION
@@ -95,12 +95,29 @@ class RegexTree{
  * State of Finite State Automata
  */
 class State {
+	private static int stateCnt = 0; // 총 State갯수 -> 식별자 생성에 이용
+	private int ID;
     private Map<Character, List<State>> nextState;
     
+    
     public State() {
+    	ID = stateCnt;
         nextState = new HashMap<>();
+        stateCnt++;
+    }
+    
+    public static int getStateCount() {
+    	return stateCnt;
     }
 
+    public int getID() {
+    	return ID;
+    }
+    
+    public Map<Character, List<State>> getNextStates(){
+    	return nextState;
+    }
+    
     public void put(char symbol, State state) {
         nextState.putIfAbsent(symbol, new ArrayList<>());//key값이 존재하지 않으면 -> key와 value를 Map에 저장하고 null을 반환
         nextState.get(symbol).add(state);
@@ -110,6 +127,17 @@ class State {
         return nextState.getOrDefault(symbol, new ArrayList<>());// 찾는 key가 존재하면 -> 해딩값을 반환, 그렇지 않으면 디폴트 값 반환
     }
     
+    public static State findEndState(State state) {//how to find final state of NFA ?
+    	if(state.nextState.isEmpty()||state.nextState == null) return state;
+    	
+    	for(Character key : state.nextState.keySet()) { // 다음 state 목록 중 첫번째 원소를 반복적으로 찾아 final state에 도달함. kleene star의 연산의 경우 앞의 state로 이동할 수 있어 무한 재귀 현상 발생..
+			state = state.nextState.get(key).get(0);
+			break;
+		}
+
+    	if(state.nextState.isEmpty()||state.nextState == null) return state; 	
+    	return findEndState(state);
+    }
 }
 
 /*
@@ -141,20 +169,23 @@ class FiniteAutomataConverter{
         State endState = new State();
         
         State leftNFA = convertToFiniteAutomata(rt.getLeft());
+        State leftEndState = State.findEndState(leftNFA);//how to find final state of left NFA ?
         
         startState.put('ε', leftNFA);
     	startState.put('ε', endState);
         leftNFA.put('ε', endState);
-        
-        //how to find final state of left NFA ?
+        leftEndState.put('ε', leftNFA);  
         
     	return startState;
     }
 
     private State convertConcat(RegexTree rt) {
         State leftNFA = convertToFiniteAutomata(rt.getLeft());
+        State leftEndState = State.findEndState(leftNFA);;
         State rightNFA = convertToFiniteAutomata(rt.getRight());
-        leftNFA.put('ε', rightNFA);//TODO
+        
+        leftEndState.put('ε', rightNFA);//TODO
+        
         return leftNFA;
     }
     
@@ -163,20 +194,81 @@ class FiniteAutomataConverter{
     	State endState = new State();
     	
     	State leftNFA = convertToFiniteAutomata(rt.getLeft());
+    	State leftEndState = State.findEndState(leftNFA);
         State rightNFA = convertToFiniteAutomata(rt.getRight());
-        
+        State rightEndState = State.findEndState(rightNFA);
         
     	startState.put('ε', leftNFA);
     	startState.put('ε', rightNFA);
     	
-    	leftNFA.put('ε', endState);
-    	rightNFA.put('ε', endState);
+    	leftEndState.put('ε', endState);
+    	rightEndState.put('ε', endState);
     	
     	return startState;
     }
 	
 }
 
+/**
+ * 
+ * transition table 
+ *
+ */
+class FiniteAutomataTable{
+	private String[][] data;
+	
+	public FiniteAutomataTable(List<Character> symbols) {
+		symbols.add('ε');
+		
+		data = new String[State.getStateCount()][symbols.size()];
+
+	}
+	
+	public void set(List<Character> symbols, State state){
+		
+		for(Map.Entry<Character, List<State>> entry : state.getNextStates().entrySet()) {
+			Character symbol = entry.getKey();
+			List<State> nextStates = entry.getValue();
+			
+			String nextStateStr = "{";
+			
+			for(State ns : nextStates) {
+				nextStateStr += ("q"+Integer.toString(ns.getID())+",");
+			}	
+			nextStateStr += "}";
+			
+			data[state.getID()][symbols.indexOf(symbol)] = nextStateStr;
+			
+			for(State ns : nextStates) {
+				System.out.println("next q"+ns.getID());
+				if(!(String.join("",data[ns.getID()]).contains("{")&&String.join("",data[ns.getID()]).contains("}"))) {
+					System.out.println("find q"+ns.getID());
+					set(symbols, ns);
+				}
+			}
+		}
+		
+	}
+	
+	public void print(List<Character> symbols) {
+		System.out.print("    ");
+		//print symbols
+		for(int i = 0; i<symbols.size();i++) {
+			System.out.print("   "+symbols.get(i)+"     ");
+		}
+		
+		System.out.println("");
+		System.out.println("==========================================");
+		
+		for(int i = 0; i<data.length;i++) {
+			System.out.print("q"+i+"||");
+			for(int j = 0; j<data[i].length; j++) {
+				System.out.print("    "+data[i][j]+"    ");
+			}
+			System.out.println();
+		}
+	}
+}
 
 
 public class Main {
@@ -226,9 +318,9 @@ public class Main {
         return output;
     }
 	
-	public static RegexTree constructTree(List<Character> alphabetSet, String regexp) {//RegexTree 구성
+	public static RegexTree constructTree(List<Character> alphabetSet, String pRegexp) {//RegexTree 구성
         Stack<RegexTree> stack = new Stack<>();
-        for (char c : regexp.toCharArray()) {
+        for (char c : pRegexp.toCharArray()) {
             if (alphabetSet.contains(c)) {
                 stack.push(new RegexTree(Type.SYMBOL, c));
             } else {
@@ -305,14 +397,10 @@ public class Main {
 		
 		//RE 후위식 변환
 		String pRegex = postfix(alphabetSet, regex);
-		System.out.println(pRegex);
+		System.out.println("RE 후위식 변환 : " + pRegex);
 		
 		//RE TREE 구성
 		RegexTree rTree = constructTree(alphabetSet, pRegex);
-		
-		
-		System.out.println(rTree.getValue());
-		System.out.println(rTree.getType().getText());
 		
 		//CHECK RE TREE
 		inorder(rTree);
@@ -333,6 +421,9 @@ public class Main {
 		 * - transition function
 		 * - start state, final state
 		 */
+		FiniteAutomataTable fat = new FiniteAutomataTable(alphabetSet);
+		fat.set(alphabetSet, startState);
+		fat.print(alphabetSet);
 		
 		
 	}
