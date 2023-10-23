@@ -14,7 +14,7 @@ import java.util.Scanner;
  * KLEENE
  */
 enum Type{
-	SYMBOL(' ', -1),
+	SYMBOL(' ', 0),
 	UNION('+', 1),
 	CONCAT('.', 2),
 	KLEENE('*', 3); // priority 값이 높을 수록 우선임. 
@@ -97,12 +97,12 @@ class RegexTree{
 class State {
 	private static int stateCnt = 0; // 총 State갯수 -> 식별자 생성에 이용
 	private int ID;
-    private Map<Character, List<State>> nextState;
+    private Map<Character, List<State>> nextStates;
     
     
     public State() {
     	ID = stateCnt;
-        nextState = new HashMap<>();
+        nextStates = new HashMap<>();
         stateCnt++;
     }
     
@@ -115,94 +115,82 @@ class State {
     }
     
     public Map<Character, List<State>> getNextStates(){
-    	return nextState;
+    	return nextStates;
     }
     
     public void put(char symbol, State state) {
-        nextState.putIfAbsent(symbol, new ArrayList<>());//key값이 존재하지 않으면 -> key와 value를 Map에 저장하고 null을 반환
-        nextState.get(symbol).add(state);
-    }
-
-    public List<State> get(char symbol) {
-        return nextState.getOrDefault(symbol, new ArrayList<>());// 찾는 key가 존재하면 -> 해딩값을 반환, 그렇지 않으면 디폴트 값 반환
-    }
-    
-    public static State findEndState(State state) {//how to find final state of NFA ?
-    	if(state.nextState.isEmpty()||state.nextState == null) return state;
-    	
-    	for(Character key : state.nextState.keySet()) { // 다음 state 목록 중 첫번째 원소를 반복적으로 찾아 final state에 도달함. kleene star의 연산의 경우 앞의 state로 이동할 수 있어 무한 재귀 현상 발생..
-			state = state.nextState.get(key).get(0);
-			break;
-		}
-
-    	if(state.nextState.isEmpty()||state.nextState == null) return state; 	
-    	return findEndState(state);
+        nextStates.putIfAbsent(symbol, new ArrayList<>());//key값이 존재하지 않으면 -> key와 value를 Map에 저장하고 null을 반환
+        nextStates.get(symbol).add(state);
     }
 }
 
 /*
- * 유한 오토마타 변환기
+ * 유한 오토마타 변환기 (Regex to NFA-ε)
  */
 class FiniteAutomataConverter{
-	public State convertToFiniteAutomata(RegexTree rt) {
+	public State convertToFiniteAutomata(RegexTree rt, Stack<State> es) {
         if (rt.getType() == Type.SYMBOL) {
-            return convertSymbol(rt);
+            return convertSymbol(rt, es);
         } else if (rt.getType() == Type.CONCAT) {
-            return convertConcat(rt);
+            return convertConcat(rt, es);
         } else if (rt.getType() == Type.UNION) {
-            return convertUnion(rt);
+            return convertUnion(rt, es);
         } else if (rt.getType() == Type.KLEENE) {
-            return convertKleene(rt);
+            return convertKleene(rt, es);
         }
         throw new IllegalArgumentException("Invalid expression type");
     }
 
-    private State convertSymbol(RegexTree rt) {
+    private State convertSymbol(RegexTree rt, Stack<State> es) {
         State startState = new State();
         State endState = new State();
         startState.put(rt.getValue(), endState);
+        es.push(endState);
         return startState;
     }
     
-    private State convertKleene(RegexTree rt) {
+    private State convertKleene(RegexTree rt, Stack<State> es) {
     	State startState = new State();
         State endState = new State();
         
-        State leftNFA = convertToFiniteAutomata(rt.getLeft());
-        State leftEndState = State.findEndState(leftNFA);//how to find final state of left NFA ?
+        State leftNFA = convertToFiniteAutomata(rt.getLeft(), es);
+        State leftEndState = es.pop();
         
         startState.put('ε', leftNFA);
     	startState.put('ε', endState);
-        leftNFA.put('ε', endState);
+        leftEndState.put('ε', endState);
         leftEndState.put('ε', leftNFA);  
         
+        es.push(endState);
     	return startState;
     }
 
-    private State convertConcat(RegexTree rt) {
-        State leftNFA = convertToFiniteAutomata(rt.getLeft());
-        State leftEndState = State.findEndState(leftNFA);;
-        State rightNFA = convertToFiniteAutomata(rt.getRight());
+    private State convertConcat(RegexTree rt, Stack<State> es) {
+        State leftNFA = convertToFiniteAutomata(rt.getLeft(), es);
+        State leftEndState = es.pop();
+        State rightNFA = convertToFiniteAutomata(rt.getRight(), es);
         
         leftEndState.put('ε', rightNFA);//TODO
         
         return leftNFA;
     }
     
-    private State convertUnion(RegexTree rt) {
+    private State convertUnion(RegexTree rt, Stack<State> es) {
     	State startState = new State();
     	State endState = new State();
     	
-    	State leftNFA = convertToFiniteAutomata(rt.getLeft());
-    	State leftEndState = State.findEndState(leftNFA);
-        State rightNFA = convertToFiniteAutomata(rt.getRight());
-        State rightEndState = State.findEndState(rightNFA);
+    	State leftNFA = convertToFiniteAutomata(rt.getLeft(), es);
+    	State leftEndState = es.pop();
+        State rightNFA = convertToFiniteAutomata(rt.getRight(), es);
+        State rightEndState = es.pop();
         
     	startState.put('ε', leftNFA);
     	startState.put('ε', rightNFA);
     	
     	leftEndState.put('ε', endState);
     	rightEndState.put('ε', endState);
+    	
+    	es.push(endState);
     	
     	return startState;
     }
@@ -211,7 +199,7 @@ class FiniteAutomataConverter{
 
 /**
  * 
- * transition table 
+ * transition table 구성 및 출력
  *
  */
 class FiniteAutomataTable{
@@ -240,9 +228,7 @@ class FiniteAutomataTable{
 			data[state.getID()][symbols.indexOf(symbol)] = nextStateStr;
 			
 			for(State ns : nextStates) {
-				System.out.println("next q"+ns.getID());
 				if(!(String.join("",data[ns.getID()]).contains("{")&&String.join("",data[ns.getID()]).contains("}"))) {
-					System.out.println("find q"+ns.getID());
 					set(symbols, ns);
 				}
 			}
@@ -251,23 +237,41 @@ class FiniteAutomataTable{
 	}
 	
 	public void print(List<Character> symbols) {
-		System.out.print("    ");
+		System.out.print("     ");
 		//print symbols
 		for(int i = 0; i<symbols.size();i++) {
-			System.out.print("   "+symbols.get(i)+"     ");
+			System.out.print("     "+symbols.get(i)+"      ");
 		}
 		
 		System.out.println("");
-		System.out.println("==========================================");
+		System.out.println("-".repeat(symbols.size()*12+7));
 		
 		for(int i = 0; i<data.length;i++) {
-			System.out.print("q"+i+"||");
+			System.out.print("q"+i+" : ");
 			for(int j = 0; j<data[i].length; j++) {
-				System.out.print("    "+data[i][j]+"    ");
+				String nextStr = (data[i][j] != null)? data[i][j] : "---";
+				System.out.print("    "+nextStr+"    ");
 			}
 			System.out.println();
 		}
 	}
+}
+
+
+/**
+ * TODO
+ * 입력 유효성 검사기 (알파젯, 정규식 등)
+ *
+ */
+class InputValidator{
+	public static boolean isValidAlphabetSet(List<Character> alphabetSet, String message) {
+		if(alphabetSet.contains('(')||alphabetSet.contains(')')||alphabetSet.contains('*')||alphabetSet.contains('+')) {
+			message = "연산자는 알파벳으로 사용할 수 없습니다.";
+			return false;
+		}
+		return true;
+	}
+	//public static boolean isValidRegex(List<Character> alphabetSet, String regex, String message);
 }
 
 
@@ -366,15 +370,16 @@ public class Main {
 	
 	public static void main(String[] args) {
 		/**
-		 * [input]
-		 * - a set of alphabet(ArrayList<Character>)
-		 * - RegularExpression(String)
+		 * 1. 사용자 입력
 		 * 
 		 */
 		Scanner sc = new Scanner(System.in);
 		List<Character> alphabetSet = new ArrayList<>();
 		
-		//알파벳 입력
+		/*
+		 * 1-1. 알파벳 입력
+		 * TODO alphabet 유효성 검사(연산자를 알파벳으로 입력한 경우)
+		 */
 		System.out.println("alphabet을 입력하세요.(ex) A b c 입력 시 => {'A', 'b', 'c'}");
 		String tempStr = sc.nextLine();
 		for(String t : tempStr.split(" ")) {
@@ -383,47 +388,53 @@ public class Main {
 			alphabetSet.add(c);
 		}
 		
-		
-		//RE 입력
+		/*
+		 * 1-2. 정규식 입력
+		 * TODO RE 유효성 검사(알파벳이 아닌 경우, 연산자의 위치가 부적절한 경우)
+		 */
 		System.out.println("Regular Expression을 입력하세요.");
 		String regex = sc.nextLine();
-		
-
-		//TODO RE 유효성 검사
-		//알파벳이 아니거나 연산 기호가 아닌 것 등 전처리
-		// System.out.println("alphabet이 아닌 문자가 입력되었습니다.\n Regular Expression을 다시 입력하세요.");
-		// regex = sc.nextLine();
 
 		
-		//RE 후위식 변환
-		String pRegex = postfix(alphabetSet, regex);
-		System.out.println("RE 후위식 변환 : " + pRegex);
-		
-		//RE TREE 구성
-		RegexTree rTree = constructTree(alphabetSet, pRegex);
-		
-		//CHECK RE TREE
-		inorder(rTree);
-		
-		
-		/**
-		 * 
-		 * [function]
-		 * - UNION(a|b), CONCAT(ab), KLEENE(a*, a+==aa*) 우선 순위에 따라 분리하여 연산 수행
-		 */
-		FiniteAutomataConverter fac = new FiniteAutomataConverter();
-		State startState = fac.convertToFiniteAutomata(rTree);
 		
 		
 		/*
-		 * [output]
-		 * - states
-		 * - transition function
-		 * - start state, final state
+		 * 2. 겅규식 트리 구성 
+		 * 
 		 */
+		String pRegex = postfix(alphabetSet, regex);//RE 후위식 변환
+		// CHECK postfix => System.out.println("RE 후위식 변환 : " + pRegex);
+
+		RegexTree rTree = constructTree(alphabetSet, pRegex);//RE TREE 구성
+		//CHECK RE TREE => inorder(rTree);
+		
+		
+		
+		/*
+		 * 3. 정규식에 대한 NFA-ε 구하기
+		 */
+		FiniteAutomataConverter fac = new FiniteAutomataConverter();
+		
+		Stack<State> endStateStack = new Stack<>();
+		State startState = fac.convertToFiniteAutomata(rTree, endStateStack);//정규식에 대한 오토마타 변환
+		State finalState = endStateStack.pop();
+		
+		
+		
+		
+		/*
+		 * 4. 출력
+		 * - Start, Final State
+		 * - Transition Table
+		 * 
+		 */
+		System.out.println("\n===================<RESULT>===================");
+		System.out.println("Start State : q"+startState.getID());
+		System.out.println("Final State : q"+finalState.getID());
+		System.out.println("Transition Table : ");
 		FiniteAutomataTable fat = new FiniteAutomataTable(alphabetSet);
-		fat.set(alphabetSet, startState);
-		fat.print(alphabetSet);
+		fat.set(alphabetSet, startState);//transition을 table 형태(2차원 배열)로 구성
+		fat.print(alphabetSet);//출력
 		
 		
 	}
