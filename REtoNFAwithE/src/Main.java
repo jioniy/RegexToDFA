@@ -170,7 +170,7 @@ class FiniteAutomataConverter{
         State leftEndState = es.pop();
         State rightNFA = convertToFiniteAutomata(rt.getRight(), es);
         
-        leftEndState.put('ε', rightNFA);//TODO
+        leftEndState.put('ε', rightNFA);
         
         return leftNFA;
     }
