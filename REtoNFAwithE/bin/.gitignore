@@ -1,9 +1,7 @@
-/FiniteAutomataState.class
-/State.class
-/FiniteAutomata.class
 /FiniteAutomataConverter.class
-/FiniteAutomataPrinter$Main.class
-/FiniteAutomataPrinter.class
-/Main.class
 /FiniteAutomataTable.class
 /InputValidator.class
+/Main.class
+/RegexTree.class
+/State.class
+/Type.class

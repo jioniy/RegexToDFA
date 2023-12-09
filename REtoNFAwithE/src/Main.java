@@ -243,8 +243,13 @@ class FiniteAutomataTable{
 			System.out.print("     "+symbols.get(i)+"      ");
 		}
 		
-		System.out.println("");
-		System.out.println("-".repeat(symbols.size()*12+7));
+		System.out.println();
+		// System.out.println("-".repeat(symbols.size()*12+7));
+		for(int i =0 ;i<symbols.size()*12+7;i++) {
+			System.out.print("-");
+		}
+		System.out.println();
+		
 		
 		for(int i = 0; i<data.length;i++) {
 			System.out.print("q"+i+" : ");
@@ -435,6 +440,17 @@ public class Main {
 		FiniteAutomataTable fat = new FiniteAutomataTable(alphabetSet);
 		fat.set(alphabetSet, startState);//transition을 table 형태(2차원 배열)로 구성
 		fat.print(alphabetSet);//출력
+		
+		/**
+		 * 5. 문자열 확인
+		 * NFA-e -> NFA -> DFA 
+		 * 문자열 입력 
+		 * accept / reject
+		 */
+		System.out.println("\n===================<CHECK>===================");
+		System.out.println("확인하고 싶은 문자열을 입력하세요.");
+		String inputStr = sc.nextLine();
+		
 		
 		
 	}
