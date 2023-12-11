@@ -116,4 +116,8 @@ public class NFAETransitionTable{
 			System.out.println(res);
 		}
 	}
+	
+	public Map<Integer, Set<NFAEState>> getEpsilonClosureSet(){
+		return epsilonClosureSet;
+	}
 }

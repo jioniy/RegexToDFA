@@ -57,7 +57,7 @@ public class Main {
 		 * 
 		 */
 		System.out.println("\n===================<RESULT>===================");
-		System.out.println("\n===> NFA-ε <===");
+		System.out.println("\n===> NFA-ε");
 		System.out.println("Start State : q"+startState.getID());
 		System.out.println("Final State : q"+finalState.getID());
 		System.out.println("Transition Table : ");
@@ -70,13 +70,28 @@ public class Main {
 		 * 5. NFA-ε to DFA
 		 * - ε-closure 
 		 * - Transition table
+		 * TODO 다른 정규식에 대한 확인 필요
 		 */
-		System.out.println("\n===> ε-closure <===");
+		System.out.println();
+		System.out.println("\n===> ε-closure");
 		nt.setEpsilonClosure();
 		nt.printEpsilonClosure();
 		
 		
-		System.out.println("\n===> DFA <===");
+		System.out.println();
+		System.out.println("\n===> DFA");
+		DFAConverter dc = new DFAConverter();
+		
+		DFAState ds = dc.convertToDFA(startState, nt.getEpsilonClosureSet());
+		System.out.println("States : ");
+		dc.printDFAStates();
+		System.out.println("\nAccepting States : ");
+		dc.printDFAAcceptingStates(finalState);
+		
+		System.out.println("\n\nTransition Table : ");
+		DFATransitionTable dt = new DFATransitionTable(alphabetSet);
+		dt.set(ds);
+		dt.print();
 		
 		
 		
@@ -85,6 +100,7 @@ public class Main {
 		 * 문자열 입력 
 		 * accept / reject
 		 */
+		System.out.println();
 		System.out.println("\n===================<CHECK>===================");
 		System.out.println("확인하고 싶은 문자열을 입력하세요.");
 		String inputStr = sc.nextLine();
