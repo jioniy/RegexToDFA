@@ -4,6 +4,12 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 
+/**
+ * @author JiwonLee
+ * 
+ * NFA-ε to DFA
+ * 
+ */
 public class DFAConverter {
 	private Set<DFAState> DFAStates; // DFA State의 중복 생성을 막기 위한 DFA State 저장
 	// NFA transition으로 갈 수 있는 state 집합 -> DFA state로 생성

@@ -1,7 +1,7 @@
 import java.util.Arrays;
 
 /**
- * @author leejiwon
+ * @author JiwonLee
  *
  *Expression 타입
  * SYMBOL - alphabet

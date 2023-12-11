@@ -1,8 +1,8 @@
 /**
- * is a string s in language?
  * 
- * @author jioniy
- *
+ * @author JiwonLee
+ * 
+ * check string accepted/rejected
  */
 public class DeterministicAccepter {
 	DFAState DFA;

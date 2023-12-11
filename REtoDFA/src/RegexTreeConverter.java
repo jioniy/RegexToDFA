@@ -3,7 +3,7 @@ import java.util.List;
 import java.util.Stack;
 /**
  * Regular Expression : String to Tree
- * @author leejiwon
+ * @author JiwonLee
  * 
  * 1. input validator
  * 

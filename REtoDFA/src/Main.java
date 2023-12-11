@@ -4,11 +4,17 @@ import java.util.Scanner;
 import java.util.Stack;
 /**
  * 
- * @author jioniy
+ * @author JiwonLee
  * 
- * TODO 
+ * 1. Regular Expression To NFA-ε
+ * 2. NFA-ε to DFA
+ * 3. String Check
+ * 
+ * 
+ * > TODO 
  * - 알파벳 & 정규식 유효성 검사
  * - DFA 변환 Test 필요
+ * - 파일 구조 리팩토링
  * 
  */
 public class Main {

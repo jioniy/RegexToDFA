@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import java.util.HashSet;
 
 /** 
- * @author leejiwon
+ * @author JiwonLee
  *
  * State of DFA
  *  

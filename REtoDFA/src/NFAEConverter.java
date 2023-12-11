@@ -1,7 +1,7 @@
 import java.util.Stack;
 
 /**
- * @author leejiwon
+ * @author JiwonLee
  * 
  * RegularExpression to NFA-ε
  * 

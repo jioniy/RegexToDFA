@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.HashMap;
 
 /**
- * @author leejiwon
+ * @author JiwonLee
  * 
  * NFA-ε Transition Table
  *

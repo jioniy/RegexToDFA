@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /** 
- * @author leejiwon
+ * @author JiwonLee
  *
  * State of NFA-ε
  *  

@@ -1,7 +1,13 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * 
+ * @author JiwonLee
+ * 
+ * set & print DFA Transition Table
+ *
+ */
 public class DFATransitionTable {
 	private List<Character> symbols;
 	String data[][];
