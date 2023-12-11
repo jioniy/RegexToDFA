@@ -3,7 +3,7 @@ import java.util.Arrays;
 /**
  * @author leejiwon
  *
- *Expression Å¸ÀÔ
+ *Expression íƒ€ì…
  * SYMBOL - alphabet
  * CONCAT
  * UNION
@@ -13,7 +13,7 @@ enum Type{
 	SYMBOL(' ', 0),
 	UNION('+', 1),
 	CONCAT('.', 2),
-	KLEENE('*', 3); // priority °ªÀÌ ³ôÀ» ¼ö·Ï ¿ì¼±ÀÓ. 
+	KLEENE('*', 3); // priority ê°’ì´ ë†’ì„ ìˆ˜ë¡ ìš°ì„ ì„. 
 	
 	private final Character text;
 	private final int priority;
@@ -39,8 +39,8 @@ enum Type{
 		
 	}
 	public static boolean isHigherPriority(char a, char b) {
-        int ap = findTypeByText(a).priority;//a ¿ì¼±¼øÀ§
-        int bp = findTypeByText(b).priority;//b ¿ì¼±¼øÀ§
+        int ap = findTypeByText(a).priority;//a ìš°ì„ ìˆœìœ„
+        int bp = findTypeByText(b).priority;//b ìš°ì„ ìˆœìœ„
         
         return ap > bp;
     }

@@ -3,7 +3,7 @@ import java.util.Stack;
 /**
  * @author leejiwon
  * 
- * RegularExpression to NFA-¥å
+ * RegularExpression to NFA-Îµ
  * 
  */
 public class NFAEConverter{
@@ -35,10 +35,10 @@ public class NFAEConverter{
     	NFAEState leftNFA = convertToFiniteAutomata(rt.getLeft(), es);
     	NFAEState leftEndState = es.pop();
         
-        startState.put('¥å', leftNFA);
-    	startState.put('¥å', endState);
-        leftEndState.put('¥å', endState);
-        leftEndState.put('¥å', leftNFA);  
+        startState.put('Îµ', leftNFA);
+    	startState.put('Îµ', endState);
+        leftEndState.put('Îµ', endState);
+        leftEndState.put('Îµ', leftNFA);  
         
         es.push(endState);
     	return startState;
@@ -49,7 +49,7 @@ public class NFAEConverter{
     	NFAEState leftEndState = es.pop();
     	NFAEState rightNFA = convertToFiniteAutomata(rt.getRight(), es);
         
-        leftEndState.put('¥å', rightNFA);
+        leftEndState.put('Îµ', rightNFA);
         
         return leftNFA;
     }
@@ -63,11 +63,11 @@ public class NFAEConverter{
     	NFAEState rightNFA = convertToFiniteAutomata(rt.getRight(), es);
     	NFAEState rightEndState = es.pop();
         
-    	startState.put('¥å', leftNFA);
-    	startState.put('¥å', rightNFA);
+    	startState.put('Îµ', leftNFA);
+    	startState.put('Îµ', rightNFA);
     	
-    	leftEndState.put('¥å', endState);
-    	rightEndState.put('¥å', endState);
+    	leftEndState.put('Îµ', endState);
+    	rightEndState.put('Îµ', endState);
     	
     	es.push(endState);
     	

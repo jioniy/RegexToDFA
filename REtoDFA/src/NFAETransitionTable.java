@@ -1,25 +1,36 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.HashMap;
 
 /**
  * @author leejiwon
  * 
- * NFA-�� Transition Table
+ * NFA-ε Transition Table
  *
  */
 public class NFAETransitionTable{
+	private List<Character> symbols;
 	private String[][] data;
+	private NFAEState[] NFAEStateList;
+	private Map<Integer, Set<NFAEState>> epsilonClosureSet;
 	
 	
 	public NFAETransitionTable(List<Character> symbols) {
-		symbols.add('��');
-		
-		data = new String[NFAEState.getStateCount()][symbols.size()];
-
+		this.symbols = new ArrayList<>();
+		for(Character s : symbols) {
+			this.symbols.add(s);
+		}
+		this.symbols.add('ε');
+		data = new String[NFAEState.getStateCount()][this.symbols.size()];
+		NFAEStateList = new NFAEState[NFAEState.getStateCount()];
+		epsilonClosureSet = new HashMap<>();
 	}
 	
-	public void set(List<Character> symbols, NFAEState state){
+	public void set(NFAEState state){
+		NFAEStateList[state.getID()] = state;
 		
 		for(Map.Entry<Character, List<NFAEState>> entry : state.getNextStates().entrySet()) {
 			Character symbol = entry.getKey();
@@ -36,14 +47,14 @@ public class NFAETransitionTable{
 			
 			for(NFAEState ns : nextStates) {
 				if(!(String.join("",data[ns.getID()]).contains("{")&&String.join("",data[ns.getID()]).contains("}"))) {
-					set(symbols, ns);
+					set(ns);
 				}
 			}
 		}
 		
 	}
 	
-	public void print(List<Character> symbols) {
+	public void print() {
 		System.out.print("     ");
 		//print symbols
 		for(int i = 0; i<symbols.size();i++) {
@@ -65,6 +76,44 @@ public class NFAETransitionTable{
 				System.out.print("    "+nextStr+"    ");
 			}
 			System.out.println();
+		}
+	}
+	
+	// epsilon closure 구하기 - 자기 자신 + epsilon으로 이동 가능한 모든 위치 탐색
+	public void setEpsilonClosure() {
+		for(int i=0;i<NFAEStateList.length;i++) {
+			Set<NFAEState> epsilonClosureListOfState = new HashSet<>();
+			findEpsilonClosureOfState(NFAEStateList[i], epsilonClosureListOfState);
+			epsilonClosureSet.put(NFAEStateList[i].getID(), epsilonClosureListOfState);
+		}
+	}
+	
+	
+	public void findEpsilonClosureOfState(NFAEState state, Set<NFAEState> epsilonClosureListOfState) {
+		epsilonClosureListOfState.add(state);
+		if(!state.getNextStates().containsKey('ε')) return;
+		for(NFAEState s : state.getNextStates().get('ε')) {
+			epsilonClosureListOfState.add(s);
+			findEpsilonClosureOfState(s,epsilonClosureListOfState);
+		}
+	}
+	
+	
+	public void printEpsilonClosure() {
+		for(Map.Entry<Integer, Set<NFAEState>> entry : epsilonClosureSet.entrySet()) {
+			Integer stateId = entry.getKey();
+			Set<NFAEState> states = entry.getValue();
+			
+			System.out.print("ε-closure(q"+stateId+") = ");
+			
+			String res = "{";
+			
+			for(NFAEState s : states) {
+				res += ("q"+Integer.toString(s.getID())+",");
+			}	
+			res += "}";
+			
+			System.out.println(res);
 		}
 	}
 }

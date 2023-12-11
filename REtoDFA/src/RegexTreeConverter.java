@@ -19,16 +19,16 @@ public class RegexTreeConverter {
 	
 	// convert regex To Tree
 	public static RegexTree convert(List<Character> alphabetSet, String regexp) {
-		String pRegex = postfix(alphabetSet, regexp);//RE ÈÄÀ§½Ä º¯È¯
-		return constructTree(alphabetSet, pRegex);//RE TREE ±¸¼º
+		String pRegex = postfix(alphabetSet, regexp);//RE í›„ìœ„ì‹ ë³€í™˜
+		return constructTree(alphabetSet, pRegex);//RE TREE êµ¬ì„±
 	}
 	
 	
 	// postfix
-    private static String postfix(List<Character> alphabetSet, String regexp) {// RE ÈÄÀ§½Ä Ç¥±â·Î ÀüÈ¯
+    private static String postfix(List<Character> alphabetSet, String regexp) {// RE í›„ìœ„ì‹ í‘œê¸°ë¡œ ì „í™˜
         List<Character> temp = new ArrayList<>();
         for (int i = 0; i < regexp.length(); i++) {
-        	//°ö ¿¬»ê Ã³¸® 
+        	//ê³± ì—°ì‚° ì²˜ë¦¬ 
             if (i != 0
                     && (alphabetSet.contains(regexp.charAt(i - 1)) || regexp.charAt(i - 1) == ')' || regexp.charAt(i - 1) == Type.KLEENE.getText())
                     && (alphabetSet.contains(regexp.charAt(i))  || regexp.charAt(i) == '(')) {
@@ -42,7 +42,7 @@ public class RegexTreeConverter {
         Stack<Character> stack = new Stack<>();
         String output = "";
         for (char c : regexp.toCharArray()) {
-            if (alphabetSet.contains(c)) {//¾ËÆÄºª Ã³¸®
+            if (alphabetSet.contains(c)) {//ì•ŒíŒŒë²³ ì²˜ë¦¬
                 output += c;
                 continue;
             }
@@ -71,7 +71,7 @@ public class RegexTreeConverter {
     }
 	
     // construct Tree
-	private static RegexTree constructTree(List<Character> alphabetSet, String pRegexp) {//RegexTree ±¸¼º
+	private static RegexTree constructTree(List<Character> alphabetSet, String pRegexp) {//RegexTree êµ¬ì„±
         Stack<RegexTree> stack = new Stack<>();
         for (char c : pRegexp.toCharArray()) {
             if (alphabetSet.contains(c)) {
@@ -99,7 +99,7 @@ public class RegexTreeConverter {
     }
 	
 	
-	private static void inorder(RegexTree rt) { // RegexTree ÁßÀ§¼øÈ¸ - check ¿ë
+	private static void inorder(RegexTree rt) { // RegexTree ì¤‘ìœ„ìˆœíšŒ - check ìš©
 	    if (rt.getType() == Type.SYMBOL) {
 	        System.out.print(rt.getValue());
 	    } else if (rt.getType() == Type.CONCAT) {

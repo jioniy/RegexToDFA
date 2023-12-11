@@ -7,17 +7,17 @@ public class Main {
 	
 	public static void main(String[] args) {
 		/**
-		 * 1. »ç¿ëÀÚ ÀÔ·Â
+		 * 1. ì‚¬ìš©ì ì…ë ¥
 		 * 
 		 */
 		Scanner sc = new Scanner(System.in);
 		List<Character> alphabetSet = new ArrayList<>();
 		
 		/*
-		 * 1-1. ¾ËÆÄºª ÀÔ·Â
-		 * TODO alphabet À¯È¿¼º °Ë»ç(¿¬»êÀÚ¸¦ ¾ËÆÄºªÀ¸·Î ÀÔ·ÂÇÑ °æ¿ì)
+		 * 1-1. ì•ŒíŒŒë²³ ì…ë ¥
+		 * TODO alphabet ìœ íš¨ì„± ê²€ì‚¬(ì—°ì‚°ìë¥¼ ì•ŒíŒŒë²³ìœ¼ë¡œ ì…ë ¥í•œ ê²½ìš°)
 		 */
-		System.out.println("alphabetÀ» ÀÔ·ÂÇÏ¼¼¿ä.(ex) A b c ÀÔ·Â ½Ã => {'A', 'b', 'c'}");
+		System.out.println("alphabetì„ ì…ë ¥í•˜ì„¸ìš”.(ex) A b c ì…ë ¥ ì‹œ => {'A', 'b', 'c'}");
 		String tempStr = sc.nextLine();
 		for(String t : tempStr.split(" ")) {
 			char c = t.charAt(0);
@@ -26,64 +26,67 @@ public class Main {
 		}
 		
 		/*
-		 * 1-2. Á¤±Ô½Ä ÀÔ·Â
-		 * TODO RE À¯È¿¼º °Ë»ç(¾ËÆÄºªÀÌ ¾Æ´Ñ °æ¿ì, ¿¬»êÀÚÀÇ À§Ä¡°¡ ºÎÀûÀıÇÑ °æ¿ì)
+		 * 1-2. ì •ê·œì‹ ì…ë ¥
+		 * TODO RE ìœ íš¨ì„± ê²€ì‚¬(ì•ŒíŒŒë²³ì´ ì•„ë‹Œ ê²½ìš°, ì—°ì‚°ìì˜ ìœ„ì¹˜ê°€ ë¶€ì ì ˆí•œ ê²½ìš°)
 		 */
-		System.out.println("Regular ExpressionÀ» ÀÔ·ÂÇÏ¼¼¿ä.");
+		System.out.println("Regular Expressionì„ ì…ë ¥í•˜ì„¸ìš”.");
 		String regex = sc.nextLine();
 
 		
 		/*
-		 * 2. Á¤±Ô½Ä Æ®¸® ±¸¼º 
+		 * 2. ì •ê·œì‹ íŠ¸ë¦¬ êµ¬ì„± 
 		 * 
 		 */
-		RegexTree rTree = RegexTreeConverter.convert(alphabetSet, regex);//RE TREE ±¸¼º
+		RegexTree rTree = RegexTreeConverter.convert(alphabetSet, regex);//RE TREE êµ¬ì„±
 		
 		
 		/*
-		 * 3. Á¤±Ô½Ä¿¡ ´ëÇÑ NFA-¥å ±¸ÇÏ±â
+		 * 3. ì •ê·œì‹ì— ëŒ€í•œ NFA-Îµ êµ¬í•˜ê¸°
 		 */
 		NFAEConverter nc = new NFAEConverter();
 		
 		Stack<NFAEState> endStateStack = new Stack<>();
-		NFAEState startState = nc.convertToFiniteAutomata(rTree, endStateStack);//Á¤±Ô½Ä¿¡ ´ëÇÑ ¿ÀÅä¸¶Å¸ º¯È¯
+		NFAEState startState = nc.convertToFiniteAutomata(rTree, endStateStack);//ì •ê·œì‹ì— ëŒ€í•œ ì˜¤í† ë§ˆíƒ€ ë³€í™˜
 		NFAEState finalState = endStateStack.pop();
 		
 		
 		/*
-		 * 4. NFA-¥å
+		 * 4. NFA-Îµ
 		 * - Start, Final State
 		 * - Transition Table
 		 * 
 		 */
 		System.out.println("\n===================<RESULT>===================");
-		System.out.println("\n> NFA-¥å");
+		System.out.println("\n===> NFA-Îµ <===");
 		System.out.println("Start State : q"+startState.getID());
 		System.out.println("Final State : q"+finalState.getID());
 		System.out.println("Transition Table : ");
 		NFAETransitionTable nt = new NFAETransitionTable(alphabetSet);
-		nt.set(alphabetSet, startState);//transitionÀ» table ÇüÅÂ(2Â÷¿ø ¹è¿­)·Î ±¸¼º
-		nt.print(alphabetSet);//Ãâ·Â
+		nt.set(startState);//transitionì„ table í˜•íƒœ(2ì°¨ì› ë°°ì—´)ë¡œ êµ¬ì„±
+		nt.print();//ì¶œë ¥
 		
 		
 		/**
-		 * 5. NFA-¥å to DFA
-		 * - ¥å-closure 
+		 * 5. NFA-Îµ to DFA
+		 * - Îµ-closure 
 		 * - Transition table
 		 */
-		System.out.println("\n> ¥å-closure");
+		System.out.println("\n===> Îµ-closure <===");
+		nt.setEpsilonClosure();
+		nt.printEpsilonClosure();
 		
-		System.out.println("\n> DFA");
+		
+		System.out.println("\n===> DFA <===");
 		
 		
 		
 		/**
-		 * 6. ¹®ÀÚ¿­ È®ÀÎ
-		 * ¹®ÀÚ¿­ ÀÔ·Â 
+		 * 6. ë¬¸ìì—´ í™•ì¸
+		 * ë¬¸ìì—´ ì…ë ¥ 
 		 * accept / reject
 		 */
 		System.out.println("\n===================<CHECK>===================");
-		System.out.println("È®ÀÎÇÏ°í ½ÍÀº ¹®ÀÚ¿­À» ÀÔ·ÂÇÏ¼¼¿ä.");
+		System.out.println("í™•ì¸í•˜ê³  ì‹¶ì€ ë¬¸ìì—´ì„ ì…ë ¥í•˜ì„¸ìš”.");
 		String inputStr = sc.nextLine();
 		
 		
