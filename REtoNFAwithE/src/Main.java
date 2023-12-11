@@ -401,10 +401,8 @@ public class Main {
 		String regex = sc.nextLine();
 
 		
-		
-		
 		/*
-		 * 2. 겅규식 트리 구성 
+		 * 2. 정규식 트리 구성 
 		 * 
 		 */
 		String pRegex = postfix(alphabetSet, regex);//RE 후위식 변환
