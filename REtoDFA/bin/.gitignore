@@ -1,3 +1,5 @@
 /DFAConverter.class
 /DFAState.class
 /DFATransitionTable.class
+/REChecker.class
+/DeterministicAccepter.class

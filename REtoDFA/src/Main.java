@@ -2,7 +2,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
-
+/**
+ * 
+ * @author jioniy
+ * 
+ * TODO 
+ * - 알파벳 & 정규식 유효성 검사
+ * - DFA 변환 Test 필요
+ * 
+ */
 public class Main {
 	
 	public static void main(String[] args) {
@@ -10,6 +18,8 @@ public class Main {
 		 * 1. 사용자 입력
 		 * 
 		 */
+		System.out.println("===================[프로그램 시작]===================");
+		System.out.println();
 		Scanner sc = new Scanner(System.in);
 		List<Character> alphabetSet = new ArrayList<>();
 		
@@ -82,7 +92,7 @@ public class Main {
 		System.out.println("\n===> DFA");
 		DFAConverter dc = new DFAConverter();
 		
-		DFAState ds = dc.convertToDFA(startState, nt.getEpsilonClosureSet());
+		DFAState dfa = dc.convertToDFA(startState, nt.getEpsilonClosureSet());
 		System.out.println("States : ");
 		dc.printDFAStates();
 		System.out.println("\nAccepting States : ");
@@ -90,20 +100,40 @@ public class Main {
 		
 		System.out.println("\n\nTransition Table : ");
 		DFATransitionTable dt = new DFATransitionTable(alphabetSet);
-		dt.set(ds);
+		dt.set(dfa);
 		dt.print();
 		
 		
 		
 		/**
+		 * 
 		 * 6. 문자열 확인
 		 * 문자열 입력 
 		 * accept / reject
 		 */
+		
 		System.out.println();
 		System.out.println("\n===================<CHECK>===================");
-		System.out.println("확인하고 싶은 문자열을 입력하세요.");
-		String inputStr = sc.nextLine();
+		
+		DeterministicAccepter da = new DeterministicAccepter(dfa, finalState);
+		
+		System.out.println("확인하고 싶은 문자열을 입력하세요. \':q\'를 입력하면 종료됩니다.");
+		String inputStr = "";
+		
+		
+		while(true){
+			System.out.print(">");
+			
+			inputStr = sc.nextLine();
+			if(inputStr.equals(":q")) {
+				System.out.println();
+				System.out.println("===================[프로그램 종료]===================");
+				break;
+			}
+			if(da.isAccepted(inputStr)) System.out.println("Accepted! 언어에 해당하는 문자열입니다.");
+			else System.out.println("Rejected! 언어에 해당하지 않는 문자열입니다.");
+		}
+		
 		
 		
 	}
