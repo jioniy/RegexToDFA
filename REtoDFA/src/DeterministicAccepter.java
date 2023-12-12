@@ -5,9 +5,9 @@
  * check string accepted/rejected
  */
 public class DeterministicAccepter {
-	DFAState DFA;
-	DFAState startDFA;
-	NFAEState finalState;
+	private DFAState DFA;
+	private DFAState startDFA;
+	private NFAEState finalState;
 	
 	public DeterministicAccepter(DFAState DFA, NFAEState finalState){
 		this.DFA = DFA;

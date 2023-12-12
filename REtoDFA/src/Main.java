@@ -4,17 +4,31 @@ import java.util.Scanner;
 import java.util.Stack;
 /**
  * 
- * @author JiwonLee
+ * 
+ * 0. Regular Expression(String Input) to RegexTree
+ * - RegexTree
+ * - RegexTreeConverter
  * 
  * 1. Regular Expression To NFA-ε
+ * - NFAEState
+ * - NFAEConverter
+ * - NFAETransitionTable
+ * 
  * 2. NFA-ε to DFA
+ * - DFAState
+ * - DFAConverter
+ * - DFATransitionTable
+ * 
  * 3. String Check
+ * - DeterministicAccepter
  * 
  * 
  * > TODO 
- * - 알파벳 & 정규식 유효성 검사
- * - DFA 변환 Test 필요
+ * - 알파벳 & 정규식 유효성 검사 --> RegexTreeConverter - isValid?
+ * - DFA 변환 Test 필요 
  * - 파일 구조 리팩토링
+ * 
+ * @author JiwonLee
  * 
  */
 public class Main {
@@ -136,8 +150,8 @@ public class Main {
 				System.out.println("===================[프로그램 종료]===================");
 				break;
 			}
-			if(da.isAccepted(inputStr)) System.out.println("Accepted! 언어에 해당하는 문자열입니다.");
-			else System.out.println("Rejected! 언어에 해당하지 않는 문자열입니다.");
+			if(da.isAccepted(inputStr)) System.out.println("Accepted!");
+			else System.out.println("Rejected!");
 		}
 		
 		

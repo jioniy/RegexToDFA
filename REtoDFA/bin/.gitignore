@@ -1,5 +1,11 @@
 /DFAConverter.class
 /DFAState.class
 /DFATransitionTable.class
-/REChecker.class
 /DeterministicAccepter.class
+/Main.class
+/NFAEConverter.class
+/NFAEState.class
+/NFAETransitionTable.class
+/RegexTree.class
+/RegexTreeConverter.class
+/Type.class
