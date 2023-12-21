@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class DFATransitionTable {
 	private List<Character> symbols;
-	String data[][];
+	private String data[][];
 	
 	public DFATransitionTable(List<Character> symbols) {
 		this.symbols = new ArrayList<>();

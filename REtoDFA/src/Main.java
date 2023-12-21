@@ -4,22 +4,25 @@ import java.util.Scanner;
 import java.util.Stack;
 /**
  * 
+ * 0. Input Alphabet Set & Regular Expression
+ * - Input
+ * - InputValidator
  * 
- * 0. Regular Expression(String Input) to RegexTree
+ * 1. Regular Expression(String Input) to RegexTree
  * - RegexTree
  * - RegexTreeConverter
  * 
- * 1. Regular Expression To NFA-ε
+ * 2. Regular Expression To NFA-ε
  * - NFAEState
  * - NFAEConverter
  * - NFAETransitionTable
  * 
- * 2. NFA-ε to DFA
+ * 3. NFA-ε to DFA
  * - DFAState
  * - DFAConverter
  * - DFATransitionTable
  * 
- * 3. String Check
+ * 4. String Check
  * - DeterministicAccepter
  * 
  * 
@@ -40,27 +43,21 @@ public class Main {
 		 */
 		System.out.println("===================[프로그램 시작]===================");
 		System.out.println();
-		Scanner sc = new Scanner(System.in);
+		
 		List<Character> alphabetSet = new ArrayList<>();
 		
 		/*
 		 * 1-1. 알파벳 입력
-		 * TODO alphabet 유효성 검사(연산자를 알파벳으로 입력한 경우)
+		 * 
 		 */
-		System.out.println("alphabet을 입력하세요.(ex) A b c 입력 시 => {'A', 'b', 'c'}");
-		String tempStr = sc.nextLine();
-		for(String t : tempStr.split(" ")) {
-			char c = t.charAt(0);
-			if(alphabetSet.contains(c)) continue;
-			alphabetSet.add(c);
-		}
+		alphabetSet = Input.inputStringToAlphabetSet();
 		
 		/*
 		 * 1-2. 정규식 입력
-		 * TODO RE 유효성 검사(알파벳이 아닌 경우, 연산자의 위치가 부적절한 경우)
+		 * 
 		 */
-		System.out.println("Regular Expression을 입력하세요.");
-		String regex = sc.nextLine();
+		
+		String regex = Input.inputRegexString(alphabetSet);
 
 		
 		/*
@@ -100,7 +97,6 @@ public class Main {
 		 * 5. NFA-ε to DFA
 		 * - ε-closure 
 		 * - Transition table
-		 * TODO 다른 정규식에 대한 확인 필요
 		 */
 		System.out.println();
 		System.out.println("\n===> ε-closure");
@@ -139,7 +135,7 @@ public class Main {
 		
 		System.out.println("확인하고 싶은 문자열을 입력하세요. \':q\'를 입력하면 종료됩니다.");
 		String inputStr = "";
-		
+		Scanner sc = new Scanner(System.in);
 		
 		while(true){
 			System.out.print(">");

@@ -1,4 +1,6 @@
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author JiwonLee
@@ -44,4 +46,8 @@ enum Type{
         
         return ap > bp;
     }
+	
+	public static List<Character> getOperationList(){
+		return Arrays.stream(values()).map(e->e.text).collect(Collectors.toList());
+	}
 }

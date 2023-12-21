@@ -32,7 +32,7 @@ public class DFAConverter {
 	
 	
 	
-	public DFAState convertToDFA(Set<NFAEState> currStates, Map<Integer, Set<NFAEState>> epsilonClosureSet) { //  NFAEState[] NFAEStateList, 
+	private DFAState convertToDFA(Set<NFAEState> currStates, Map<Integer, Set<NFAEState>> epsilonClosureSet) {  
 		
 		//(1)curr states의 epsilon closure 가져오기 
 		Set<NFAEState> startStates = new HashSet<>();
