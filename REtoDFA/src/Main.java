@@ -27,8 +27,6 @@ import java.util.Stack;
  * 
  * 
  * > TODO 
- * - 알파벳 & 정규식 유효성 검사 --> RegexTreeConverter - isValid?
- * - DFA 변환 Test 필요 
  * - 파일 구조 리팩토링
  * 
  * @author JiwonLee
@@ -37,12 +35,12 @@ import java.util.Stack;
 public class Main {
 	
 	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
 		/**
 		 * 1. 사용자 입력
 		 * 
 		 */
 		System.out.println("===================[프로그램 시작]===================");
-		System.out.println();
 		
 		List<Character> alphabetSet = new ArrayList<>();
 		
@@ -50,14 +48,14 @@ public class Main {
 		 * 1-1. 알파벳 입력
 		 * 
 		 */
-		alphabetSet = Input.inputStringToAlphabetSet();
+		alphabetSet = Input.inputStringToAlphabetSet(sc);
 		
 		/*
 		 * 1-2. 정규식 입력
 		 * 
 		 */
 		
-		String regex = Input.inputRegexString(alphabetSet);
+		String regex = Input.inputRegexString(sc, alphabetSet);
 
 		
 		/*
@@ -133,9 +131,8 @@ public class Main {
 		
 		DeterministicAccepter da = new DeterministicAccepter(dfa, finalState);
 		
-		System.out.println("확인하고 싶은 문자열을 입력하세요. \':q\'를 입력하면 종료됩니다.");
+		System.out.println("\n[3] 확인하고 싶은 문자열을 입력하세요. \':q\'를 입력하면 종료됩니다.");
 		String inputStr = "";
-		Scanner sc = new Scanner(System.in);
 		
 		while(true){
 			System.out.print(">");
@@ -148,10 +145,11 @@ public class Main {
 			}
 			if(da.isAccepted(inputStr)) System.out.println("Accepted!");
 			else System.out.println("Rejected!");
+			System.out.println();
 		}
 		
 		
-		
+		sc.close();
 	}
 
 }

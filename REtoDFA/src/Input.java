@@ -16,13 +16,12 @@ public class Input {
 	 * input Alphabets 입력
 	 * @return
 	 */
-	public static List<Character> inputStringToAlphabetSet() {
-		Scanner sc = new Scanner(System.in);
+	public static List<Character> inputStringToAlphabetSet(Scanner sc) {
 		String s;
 		String msg;
 		
 		while(true) {
-			System.out.println("alphabet을 입력하세요.(ex) A b c 입력 시 => {'A', 'b', 'c'}");
+			System.out.println("[1] alphabet을 입력하세요.(ex) A b c 입력 시 => {'A', 'b', 'c'}");
 		
 			s = sc.nextLine();
 			msg = InputValidator.getAlphabetSetStrMsg(s);
@@ -31,8 +30,6 @@ public class Input {
 			else System.out.println(msg);
 		
 		}
-		sc.close();
-		
 		
 		List<Character> alphabetSet = new ArrayList<>();
 		for(String t : s.split(" ")) {
@@ -49,20 +46,18 @@ public class Input {
 	 * input Regex String 입력
 	 * @return
 	 */
-	public static String inputRegexString(List<Character> alphabetSet) {
-		System.out.println("Regular Expression을 입력하세요.");
-		Scanner sc = new Scanner(System.in);
+	public static String inputRegexString(Scanner sc, List<Character> alphabetSet) {
 		String regex;
+		String msg;
 		
 		while(true) {
+			System.out.println("\n[2] Regular Expression을 입력하세요.");
 			regex = sc.nextLine();
-			if(true) {
-				break;
-			}
+			msg = InputValidator.getRegexStrMsg(regex, alphabetSet);
+			if(msg.equals("valid")) break;
+			else System.out.println(msg);
 		}
 		
-		
-		sc.close();
 		return regex;
 	}
 }
